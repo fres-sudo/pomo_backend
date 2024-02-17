@@ -10,8 +10,7 @@ process.on('uncaughtException', (err) => {
 
 config({ path: './config.env' });
 
-const DB =
-  'mongodb+srv://francesco_calicchio:xF8uRdRs528p2kj7G7Bm8@pomoapp.nhmjh5n.mongodb.net/';
+const DB = process.env.DATABASE;
 
 // Log that the script is starting
 console.log('Starting server script...');
