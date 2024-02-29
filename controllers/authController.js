@@ -14,20 +14,19 @@ const signToken = (id) => {
 // --- SIGNUP ---
 
 export const signup = catchAsync(async (req, res, next) => {
-  const newUser = await User.create({
+  const user = await User.create({
     username: req.body.username,
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
   });
 
-  const token = signToken(newUser._id);
+  const token = signToken(user._id);
 
   res.status(201).json({
     status: 'success',
-    data: {
-      user: newUser,
-    },
+    token,
+    user,
   });
 });
 
@@ -58,9 +57,7 @@ export const login = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     token,
-    data: {
-      user, // Include the user data in the response
-    },
+    user,
   });
 });
 

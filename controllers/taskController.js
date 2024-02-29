@@ -32,9 +32,7 @@ export const getTaskById = async (req, res) => {
     }
     res.status(200).json({
       status: 'success',
-      data: {
-        task,
-      },
+      task
     });
   } catch (err) {
     res.status(500).json({
@@ -50,9 +48,7 @@ export const createTask = async (req, res) => {
     const task = await Task.create(req.body);
     res.status(201).json({
       status: 'success',
-      data: {
-        task,
-      },
+      task
     });
   } catch (err) {
     res.status(400).json({
@@ -69,9 +65,7 @@ export const getAllTasks = async (req, res) => {
     res.status(200).json({
       status: 'success',
       results: tasks.length,
-      data: {
-        tasks,
-      },
+      tasks,
     });
   } catch (err) {
     res.status(500).json({
@@ -87,9 +81,7 @@ export const getTask = async (req, res) => {
     const task = await Task.findById(req.params.id);
     res.status(200).json({
       status: 'success',
-      data: {
-        task,
-      },
+      task
     });
   } catch (err) {
     res.status(404).json({
@@ -108,9 +100,7 @@ export const updateTask = async (req, res) => {
     });
     res.status(200).json({
       status: 'success',
-      data: {
-        task,
-      },
+      task
     });
   } catch (err) {
     res.status(400).json({
