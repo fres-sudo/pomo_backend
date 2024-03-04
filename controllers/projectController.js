@@ -93,13 +93,14 @@ export const addTaskToProject = catchAsync(async (req, res, next) => {
   }
 
   // Extract task details from the request body
-  const { taskName, taskDescription } = req.body;
+  const { taskName, taskDescription, taskPomodoro} = req.body;
 
   // Create a new task object
   const newTask = {
     name: taskName,
     description: taskDescription,
-    completed: false // You can set this to true if the task is completed by default
+    pomodoro: taskPomodoro,
+    completed: false 
   };
 
   // Add the new task to the project's tasks array
