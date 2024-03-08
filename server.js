@@ -19,7 +19,7 @@ console.log('Starting server script...');
 console.log('Connecting to the database...');
 connect(DB)
   .then(() => {
-    console.log('DB connection successful!');
+    console.log('DB connection successful!✅');
     // Start the app after successful database connection
     const port = process.env.PORT || 3000;
     app.listen(port, () => {

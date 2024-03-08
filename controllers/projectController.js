@@ -4,13 +4,20 @@ import AppError from '../utils/appError.js';
 
 // Create a new project
 export const createProject = catchAsync(async (req, res, next) => {
-  const project = await Project.create(req.body);
-  res.status(201).json({
-    status: 'success',
-    data: {
-      project,
-    },
-  });
+  const { name, description, dueDate, owner, imageCover, tasks, contributors } = req.body;
+
+  const projectData = {
+    name,
+    description,
+    dueDate,
+    owner,
+    imageCover,
+    tasks: tasks || [], // Ensure tasks field is initialized
+    contributors: contributors || [], // Ensure contributors field is initialized
+  };
+
+  const project = await Project.create(projectData);
+  res.status(201).json(project);
 });
 
 // Get all projects
@@ -45,13 +52,7 @@ export const getProjectsByUser = catchAsync(async (req, res, next) => {
   const projects = await Project.find({ owner: req.params.userId });
 
   // Send the response with the projects found
-  res.status(200).json({
-    status: 'success',
-    results: projects.length,
-    data: {
-      projects,
-    },
-  });
+  res.status(200).json(projects,);
 });
 
 // Update project by ID

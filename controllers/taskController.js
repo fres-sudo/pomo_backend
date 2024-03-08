@@ -76,6 +76,7 @@ export const getAllTasks = async (req, res) => {
 };
 
 // Get task by ID
+/*
 export const getTask = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
@@ -90,6 +91,7 @@ export const getTask = async (req, res) => {
     });
   }
 };
+*/
 
 // Update task by ID
 export const updateTask = async (req, res) => {

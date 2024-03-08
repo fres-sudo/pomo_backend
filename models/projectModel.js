@@ -10,13 +10,14 @@ const projectSchema = new Schema({
   description: {
     type: String,
   },
-  tasks: [
-    {
+  tasks: {
+    type: [{
       type: Schema.Types.ObjectId,
       ref: 'Task',
-      unique: true,
-    },
-  ],
+      //unique: true,
+    }],
+    default: [],
+  },
   imageCover: {
     type: String,
   },
@@ -29,13 +30,14 @@ const projectSchema = new Schema({
     ref: 'User',
     required: [true, 'A project must have an owner'],
   },
-  contributors: [
-    {
+  contributors: {
+    type: [{
       type: Schema.Types.ObjectId,
       ref: 'User',
-      unique: true,
-    },
-  ],
+      //unique: true,
+    }],
+    default: [],
+  },
 });
 
 const Project = mongoose.model('Project', projectSchema);
