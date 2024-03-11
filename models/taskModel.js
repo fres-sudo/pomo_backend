@@ -19,7 +19,7 @@ const taskSchema = new mongoose.Schema({
   },
   referenceProject: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Project', // Reference the Project model
+    ref: 'Project', 
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,

@@ -5,13 +5,9 @@ import Task from '../models/taskModel.js';
 export const getTasksByProject = async (req, res) => {
   try {
     const tasks = await Task.find({ referenceProject: req.params.projectId });
-    res.status(200).json({
-      status: 'success',
-      results: tasks.length,
-      data: {
+    res.status(200).json(
         tasks,
-      },
-    });
+    );
   } catch (err) {
     res.status(500).json({
       status: 'error',
@@ -45,11 +41,21 @@ export const getTaskById = async (req, res) => {
 // Create a new task
 export const createTask = async (req, res) => {
   try {
-    const task = await Task.create(req.body);
-    res.status(201).json({
-      status: 'success',
+    const {name, description, pomodoro, completed, referenceProject, user} = req.body;
+
+    const taskData = {
+      name,
+      description,
+      pomodoro,
+      completed,
+      referenceProject,
+      user,
+    }
+
+    const task = await Task.create(taskData);
+    res.status(201).json(
       task
-    });
+    );
   } catch (err) {
     res.status(400).json({
       status: 'error',
@@ -97,13 +103,12 @@ export const getTask = async (req, res) => {
 export const updateTask = async (req, res) => {
   try {
     const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+      //new: true,
       runValidators: true,
     });
-    res.status(200).json({
-      status: 'success',
+    res.status(200).json(
       task
-    });
+    );
   } catch (err) {
     res.status(400).json({
       status: 'error',
