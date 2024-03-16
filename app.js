@@ -14,7 +14,9 @@ import userRouter from './routes/userRoutes.js';
 import taskRouter from './routes/taskRoutes.js';
 import projectRouter from './routes/projectRoutes.js';
 
-export const app = express();
+const app = express();
+
+export default app 
 
 // 1) GLOBAL MIDDLEWARES
 // Set security HTTP headers
