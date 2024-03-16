@@ -16,11 +16,15 @@ import projectRouter from './routes/projectRoutes.js';
 
 const app = express();
 
-export default app 
-
 // 1) GLOBAL MIDDLEWARES
 // Set security HTTP headers
 app.use(helmet());
+
+import express from 'express';
+import app from './app';
+
+// Enable trusting of proxies
+app.set('trust proxy', true);
 
 // Development logging
 if (process.env.NODE_ENV === 'development') {
@@ -75,3 +79,5 @@ app.all('*', (req, res, next) => {
 });
 
 app.use(globalErrorHandler);
+
+export default app 
