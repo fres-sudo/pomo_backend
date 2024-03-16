@@ -20,9 +20,6 @@ const app = express();
 // Set security HTTP headers
 app.use(helmet());
 
-import express from 'express';
-import app from './app';
-
 // Enable trusting of proxies
 app.set('trust proxy', true);
 
