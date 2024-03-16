@@ -1,6 +1,6 @@
 import { connect } from 'mongoose';
 import { config } from 'dotenv';
-import { app } from './app.js';
+import  app  from './app.js';
 
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
