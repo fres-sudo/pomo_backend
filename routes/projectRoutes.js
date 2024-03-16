@@ -22,7 +22,7 @@ router.patch('/:projectId/tasks/:taskId', authController.protect, updateTaskInPr
 
 
 // Define existing routes
-router.route('/').get(authController.protect, getAllProjects).post(authController.protect, createProject);
+router.route('/').get(getAllProjects).post(authController.protect, createProject);
 router.route('/:id').get(getProject).patch(authController.protect , updateProject).delete(authController.protect, deleteProject);
 
 // Route to get projects associated with a specific user
