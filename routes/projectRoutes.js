@@ -11,6 +11,7 @@ import {
   updateTaskInProject,
   getProjectsByUser
 } from '../controllers/projectController.js';
+import * as authController from './../controllers/authController.js';
 
 const router = express.Router();
 
@@ -25,6 +26,6 @@ router.route('/').get(getAllProjects).post(createProject);
 router.route('/:id').get(getProject).patch(updateProject).delete(deleteProject);
 
 // Route to get projects associated with a specific user
-router.route('/user/:userId').get(getProjectsByUser);
+router.get('/user/:userId', authController.protect, getProjectsByUser);
 
 export default router;

@@ -16,6 +16,10 @@ import projectRouter from './routes/projectRoutes.js';
 
 export const app = express();
 
+app.listen(3000, () => {
+  console.log("app is running");
+});
+
 // 1) GLOBAL MIDDLEWARES
 // Set security HTTP headers
 app.use(helmet());

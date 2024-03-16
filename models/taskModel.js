@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const taskSchema = new mongoose.Schema({
   name: {
     type: String,
-    unique: true,
     required: [true, 'Please provide a name for the task'],
   },
   description: {
@@ -26,6 +25,13 @@ const taskSchema = new mongoose.Schema({
     ref: 'User',
     required: [true, 'A task must have a user to refer'],
   },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
+  completedAt: {
+    type: Date,
+  }
 });
 
 const Task = mongoose.model('Task', taskSchema);

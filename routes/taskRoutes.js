@@ -2,21 +2,26 @@
 import express from 'express';
 import {
   createTask,
-  getAllTasks,
   updateTask,
   deleteTask,
   getTasksByProject,
   getTaskById,
+  getTasksByUser,
 } from '../controllers/taskController.js';
+
+import * as authController from './../controllers/authController.js';
+
 
 const router = express.Router();
 
-router.route('/').get(getAllTasks).post(createTask);
+router.route('/').post(createTask);
 
 router.route('/:id').get(getTaskById).patch(updateTask).delete(deleteTask);
 
-router.route('/project/:projectId').get(getTasksByProject);
+router.get('/project/:projectId', authController.protect, getTasksByProject);
 
+
+router.route('/user/:userId').get(getTasksByUser);
 
 
 export default router;

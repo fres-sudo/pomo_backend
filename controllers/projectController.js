@@ -64,6 +64,7 @@ export const updateProject = catchAsync(async (req, res, next) => {
   if (!project) {
     return next(new AppError('Project not found', 404));
   }
+  
   res.status(200).json({
     status: 'success',
     data: {

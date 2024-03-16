@@ -41,7 +41,7 @@ export const getTaskById = async (req, res) => {
 // Create a new task
 export const createTask = async (req, res) => {
   try {
-    const {name, description, pomodoro, completed, referenceProject, user} = req.body;
+    const {name, description, pomodoro, completed, referenceProject, user, createdAt, completedAt} = req.body;
 
     const taskData = {
       name,
@@ -50,9 +50,11 @@ export const createTask = async (req, res) => {
       completed,
       referenceProject,
       user,
+      createdAt,
+      completedAt,
     }
 
-    const task = await Task.create(taskData);
+    const task = await nmpmTask.create(taskData);
     res.status(201).json(
       task
     );
@@ -64,15 +66,12 @@ export const createTask = async (req, res) => {
   }
 };
 
-// Get all tasks
-export const getAllTasks = async (req, res) => {
+// Get all tasks by user
+export const getTasksByUser = async (req, res) => {
   try {
-    const tasks = await Task.find();
-    res.status(200).json({
-      status: 'success',
-      results: tasks.length,
-      tasks,
-    });
+    const userId = req.params.userId; // Assuming userId is provided in the request params
+    const tasks = await Task.find({ user: userId });
+    res.status(200).json(tasks,);
   } catch (err) {
     res.status(500).json({
       status: 'error',
@@ -80,6 +79,7 @@ export const getAllTasks = async (req, res) => {
     });
   }
 };
+
 
 // Get task by ID
 /*
@@ -101,9 +101,9 @@ export const getTask = async (req, res) => {
 
 // Update task by ID
 export const updateTask = async (req, res) => {
-  try {
+  try {  
     const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
-      //new: true,
+      new: true,
       runValidators: true,
     });
     res.status(200).json(
@@ -116,6 +116,8 @@ export const updateTask = async (req, res) => {
     });
   }
 };
+
+
 
 // Delete task by ID
 export const deleteTask = async (req, res) => {

@@ -32,7 +32,7 @@ connect(DB)
   });
 
 // Log that the script has finished
-console.log('Server script finished execution.');
+console.log('Server script finished execution.👀');
 
 // Handle unhandled rejections
 process.on('unhandledRejection', (err) => {
