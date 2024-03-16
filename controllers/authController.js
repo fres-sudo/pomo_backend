@@ -63,52 +63,61 @@ export const login = catchAsync(async (req, res, next) => {
 
 // --- PROTECT THE ROUTES ---
 
-export const protect = catchAsync(async (req, res, next) => {
-  // Getting token and check of it's there
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    token = req.headers.authorization.split(' ')[1];
+// Middleware function to protect routes
+export const protect = async (req, res, next) => {
+  try {
+    // Getting token from request headers
+    let token;
+    if (
+      req.headers.authorization 
+      && req.headers.authorization.startsWith('Bearer')
+    ) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    // If token is missing, return 401 Unauthorized
+    if (!token) {
+      return res.status(401).json({
+        status: 'error',
+        message: 'You are not logged in! Please log in to get access',
+      });
+    }
+
+    // Validate the token
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    
+    // Check if user still exists
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return res.status(401).json({
+        status: 'error',
+        message: 'The user belonging to this token does no longer exist',
+      });
+    }
+
+    // Check if user changed password after the token was issued
+    if (currentUser.changePasswordAfter(decoded.iat)) {
+      return res.status(401).json({
+        status: 'error',
+        message: 'User recently changed their password. Please log in again',
+      });
+    }
+
+    // Grant access to protected route
+    req.user = currentUser;
+    next();
+  } catch (error) {
+    // Log the error for debugging
+    console.error('Error in authentication middleware:', error);
+
+    // Return a 500 Internal Server Error response
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal server error',
+    });
   }
+};
 
-  if (!token) {
-    return next(
-      new AppError('You are not logged in! Please log in to get access', 401)
-    );
-  }
-
-  // Validate the token
-
-  const decoded = promisify(jwt.verify(token, process.env.JWT_SECRET));
-
-  // Check if user still exist
-
-  const currentUser = await User.findById(decoded.id);
-  if (!currentUser)
-    return next(
-      new AppError(
-        'The usern belonging to this token does no longer exists',
-        401
-      )
-    );
-
-  // Check if user changed password after the token was issued
-
-  if (currentUser.changePasswordAfter(decoded.iat)) {
-    return next(
-      new AppError(
-        'User recently changed his password, please log in again',
-        401
-      )
-    );
-  }
-
-  // GRANT ACCESS TO PROTECTED ROUTE
-  req.user = currentUser;
-  next();
-});
 
 // --- RESTRICT FUNCTION TO CERTAIN USERS ---
 
@@ -122,7 +131,6 @@ export const restrictTo = (...roles) => {
         )
       );
     }
-
     next();
   };
 };

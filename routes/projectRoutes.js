@@ -16,14 +16,14 @@ import * as authController from './../controllers/authController.js';
 const router = express.Router();
 
 // Define route for adding-deleting-updating a task to a project
-router.post('/:projectId/tasks', addTaskToProject);
-router.delete('/:projectId/tasks/:taskId', deleteTaskFromProject);
-router.patch('/:projectId/tasks/:taskId', updateTaskInProject);
+router.post('/:projectId/tasks', authController.protect, addTaskToProject);
+router.delete('/:projectId/tasks/:taskId',authController.protect, deleteTaskFromProject);
+router.patch('/:projectId/tasks/:taskId', authController.protect, updateTaskInProject);
 
 
 // Define existing routes
-router.route('/').get(getAllProjects).post(createProject);
-router.route('/:id').get(getProject).patch(updateProject).delete(deleteProject);
+router.route('/').get(authController.protect, getAllProjects).post(authController.protect, createProject);
+router.route('/:id').get(getProject).patch(authController.protect , updateProject).delete(authController.protect, deleteProject);
 
 // Route to get projects associated with a specific user
 router.get('/user/:userId', authController.protect, getProjectsByUser);

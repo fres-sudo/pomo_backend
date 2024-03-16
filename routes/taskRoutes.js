@@ -14,14 +14,17 @@ import * as authController from './../controllers/authController.js';
 
 const router = express.Router();
 
-router.route('/').post(createTask);
+router.route('/').post(authController.protect, createTask);
 
-router.route('/:id').get(getTaskById).patch(updateTask).delete(deleteTask);
+router.route('/:id')
+  .get(authController.protect, getTaskById)
+  .patch(authController.protect, updateTask)
+  .delete(authController.protect, deleteTask);
 
 router.get('/project/:projectId', authController.protect, getTasksByProject);
 
 
-router.route('/user/:userId').get(getTasksByUser);
+router.route('/user/:userId').get(authController.protect, getTasksByUser);
 
 
 export default router;

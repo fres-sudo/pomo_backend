@@ -82,14 +82,15 @@ userSchema.methods.correctPassword = async function (
 };
 
 userSchema.methods.changePasswordAfter = function (JWTTimestamp) {
+  // Initialize changeTimeStamp outside the if block
+  let changeTimeStamp = 0;
+
   if (this.passwordChangedAt) {
-    //user actually change the password at least on time
-    const changeTimeStamp = parseInt(
-      this.passwordChangedAt.getTime() / 1000,
-      10
-    );
+    // User has changed the password at least once
+    changeTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
   }
-  //user doesnt ever change his password
+
+  // Check if user changed their password after the token was issued
   return JWTTimestamp < changeTimeStamp;
 };
 
