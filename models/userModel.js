@@ -82,7 +82,7 @@ userSchema.methods.correctPassword = async function (
 };
 
 userSchema.methods.changePasswordAfter = function (JWTTimestamp) {
-  // Initialize changeTimeStamp outside the if block
+  // Initialize changeTimeStamp
   let changeTimeStamp = 0;
 
   if (this.passwordChangedAt) {
