@@ -1,5 +1,3 @@
-import app from "./../app.js";
-
 import { connect } from 'mongoose';
 import { config } from 'dotenv';
 
