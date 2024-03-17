@@ -73,7 +73,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// 3) ROUTES
+// 3)  ROUTES
 app.use('/api/v1/tasks', taskRouter);
 app.use('/api/v1/projects', projectRouter);
 app.use('/api/v1/users', userRouter);
