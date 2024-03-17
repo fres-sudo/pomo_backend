@@ -13,6 +13,7 @@ import globalErrorHandler from './controllers/errorController.js';
 import userRouter from './routes/userRoutes.js';
 import taskRouter from './routes/taskRoutes.js';
 import projectRouter from './routes/projectRoutes.js';
+import { getAllUsers } from './controllers/userController.js';
 
 const app = express();
 
@@ -71,6 +72,8 @@ app.use((req, res, next) => {
 app.use('/api/v1/tasks', taskRouter);
 app.use('/api/v1/projects', projectRouter);
 app.use('/api/v1/users', userRouter);
+
+app.get("/", getAllUsers ) 
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
