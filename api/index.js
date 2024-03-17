@@ -96,7 +96,6 @@ const startServer = () => {
       config({ path: './config.env' });
       
       const DB = process.env.DATABASE;
-      
       // Log that the script is starting...
       console.log('Starting server script...');
       
