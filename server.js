@@ -7,12 +7,12 @@ process.on('uncaughtException', (err) => {
   console.log(err.name, err.message);
   process.exit(1);
 });
-
+  
 config({ path: './config.env' });
 
 const DB = process.env.DATABASE;
 
-// Log that the script is starting
+// Log that the script is starting...
 console.log('Starting server script...');
 
 // Connect to the database
