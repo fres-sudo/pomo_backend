@@ -17,6 +17,7 @@ console.log('Starting server script...');
 
 // Connect to the database
 console.log('Connecting to the database...');
+
 connect(DB)
   .then(() => {
     console.log('DB connection successful!✅');
