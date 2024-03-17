@@ -73,7 +73,7 @@ app.use('/api/v1/tasks', taskRouter);
 app.use('/api/v1/projects', projectRouter);
 app.use('/api/v1/users', userRouter);
 
-app.get("/", getAllUsers ) 
+app.get("/", getAllUsers) 
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
