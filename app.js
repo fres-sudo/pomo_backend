@@ -28,11 +28,14 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// Apply the rate limiter middleware to all requests
+app.use(limiter);
 // Limit requests from same API
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
   message: 'Too many requests from this IP, please try again in an hour!',
+  validate: { xForwardedForHeader: false }, // Disable X-Forwarded-For header validation
 });
 app.use('/api', limiter);
 
