@@ -21,7 +21,7 @@ const app = express();
 app.use(helmet());
 
 // Enable trusting of proxies
-app.set('trust proxy', true);
+//app.set('trust proxy', true);
 
 // Development logging
 if (process.env.NODE_ENV === 'development') {
