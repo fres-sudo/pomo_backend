@@ -54,7 +54,7 @@ export const createTask = async (req, res) => {
       completedAt,
     }
 
-    const task = await nmpmTask.create(taskData);
+    const task = await Task.create(taskData);
     res.status(201).json(
       task
     );
