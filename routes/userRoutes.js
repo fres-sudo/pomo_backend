@@ -17,16 +17,16 @@ router.patch(
   authController.updatePassword,
 );
 
-router.patch('/updateMe', authController.protect, userController.updateMe);
+//router.patch('/updateMe', authController.protect, userController.updateMe);
 router.delete('/deleteMe', authController.protect, userController.deleteMe);
 
 router.get('/', userController.getAllUsers);
 //.post(userController.createUser);
 
-router
+router.route('/:id').patch(authController.protect , userController.updateUser)
 //  .route('/:id')
 //  .get(userController.getUser)
-  .patch('/:id', authController.protect , userController.updateUser)
+  
 //  .delete(userController.deleteUser);
 
 export default router;

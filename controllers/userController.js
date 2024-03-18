@@ -22,7 +22,7 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-export const updateMe = catchAsync(async (req, res, next) => {
+export const updateUser = catchAsync(async (req, res, next) => {
   //  Create error if user POSTs password data
   //if (req.body.password || req.body.passwordConfirm) {
   //  return next(
@@ -42,14 +42,14 @@ export const updateMe = catchAsync(async (req, res, next) => {
   //  runValidators: true,
   //});
 
-    // Fetch the user document
+    try{
+      // Fetch the user document
     const user = await User.findById(req.user.id);
 
     // If user document is not found, return an error
     if (!user) {
       return next(new AppError('User not found', 404));
     }
-  
     // Extract only the name and surname from the request body
     const { name, surname } = req.body;
   
@@ -60,8 +60,14 @@ export const updateMe = catchAsync(async (req, res, next) => {
     // Save the updated user object
     const updatedUser = await user.save();
   
+    res.status(200).json(updatedUser);
 
-  res.status(200).json(updatedUser);
+} catch (err) {
+    res.status(400).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
 });
 
 export const deleteMe = catchAsync(async (req, res, next) => {
