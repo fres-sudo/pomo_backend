@@ -12,6 +12,10 @@ const taskSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Set at least 1 pomodoro per task'],
   },
+  pomodoroCompleted: {
+    type: Number,
+    default: 0,
+  },
   completed: {
     type: Boolean,
     required: true,
