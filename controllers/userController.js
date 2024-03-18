@@ -24,30 +24,44 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 
 export const updateMe = catchAsync(async (req, res, next) => {
   //  Create error if user POSTs password data
-  if (req.body.password || req.body.passwordConfirm) {
-    return next(
-      new AppError(
-        'This route is not for password updates. Please use /updateMyPassword.',
-        400,
-      ),
-    );
-  }
+  //if (req.body.password || req.body.passwordConfirm) {
+  //  return next(
+  //    new AppError(
+  //      'This route is not for password updates. Please use /updateMyPassword.',
+  //      400,
+  //    ),
+  //  );
+ // }
 
   //  Filtered out unwanted fields names that are not allowed to be updated
-  const filteredBody = filterObj(req.body, 'username', 'email');
+  //const filteredBody = filterObj(req.body, 'username', 'email');
 
   //  Update user document
-  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
-    new: true,
-    runValidators: true,
-  });
+  //const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+  //  new: true,
+  //  runValidators: true,
+  //});
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      user: updatedUser,
-    },
-  });
+    // Fetch the user document
+    const user = await User.findById(req.user.id);
+
+    // If user document is not found, return an error
+    if (!user) {
+      return next(new AppError('User not found', 404));
+    }
+  
+    // Extract only the name and surname from the request body
+    const { name, surname } = req.body;
+  
+    // Update the user object with the new name and surname
+    user.name = name;
+    user.surname = surname;
+  
+    // Save the updated user object
+    const updatedUser = await user.save();
+  
+
+  res.status(200).json(updatedUser);
 });
 
 export const deleteMe = catchAsync(async (req, res, next) => {
