@@ -23,10 +23,10 @@ router.delete('/deleteMe', authController.protect, userController.deleteMe);
 router.get('/', userController.getAllUsers);
 //.post(userController.createUser);
 
-//router
+router
 //  .route('/:id')
 //  .get(userController.getUser)
-//  .patch(userController.updateUser)
+  .patch('/:id', authController.protect , userController.updateUser)
 //  .delete(userController.deleteUser);
 
 export default router;
