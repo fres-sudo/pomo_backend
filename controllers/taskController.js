@@ -41,12 +41,13 @@ export const getTaskById = async (req, res) => {
 // Create a new task
 export const createTask = async (req, res) => {
   try {
-    const {name, description, pomodoro, completed, referenceProject, user, createdAt, completedAt} = req.body;
+    const {name, description, pomodoro, pomodoroCompleted, completed, referenceProject, user, createdAt, completedAt} = req.body;
 
     const taskData = {
       name,
       description,
       pomodoro,
+      pomodoroCompleted,
       completed,
       referenceProject,
       user,
