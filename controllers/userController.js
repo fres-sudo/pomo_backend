@@ -55,7 +55,6 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 
 export const updateUser = catchAsync(async (req, res, next) => {
     try{
-
       const filteredBody = filterObj(req.body, 'name' , 'surname');
       if(req.file) filteredBody.photo = req.file.filename;
       
@@ -63,27 +62,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
         new : true,
         runValidators : true,
       });
-    // Fetch the user document
-    //const user = await User.findById(req.user.id);
 
-    // If user document is not found, return an error
-    //if (!user) {
-    //  return next(new AppError('User not found', 404));
-    //}
-    // Extract only the name and surname from the request body
-    //const { name, surname } = req.body;
-
-    console.log(req.file.filename);
-  
-    
-    // Update the user object with the new name and surname
-    //user.name = name;
-    //user.surname = surname;
-    
-  
-    // Save the updated user object
-    //const updatedUser = await user.save();
-  
     res.status(200).json(updatedUser);
 
 } catch (err) {
