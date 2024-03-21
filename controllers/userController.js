@@ -23,16 +23,17 @@ const upload = multer({
 
 export const updateUserPhoto = upload.single('photo');
 
-export const resizeUserPhoto = (req, res, next) => {
+export const resizeUserPhoto = catchAsync (async (req, res, next) => {
   if(!req.file) return next();
 
   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`
 
-  sharp(req.file.buffer).resize(500, 500).toFormat('jpeg').jpeg({quality : 90}).toFile(`public/images/users/${req.file.filename}`);
+  await sharp(req.file.buffer).resize(500, 500).toFormat('jpeg').jpeg({quality : 90}).toFile(`public/images/users/${req.file.filename}`);
 
   next();
 
-}
+});
+
 const filterObj = (obj, ...allowFields) => {
   const newObj = {};
   Object.keys(obj).forEach((el) => {
@@ -57,7 +58,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
     try{
       const filteredBody = filterObj(req.body, 'name' , 'surname');
       if(req.file) filteredBody.photo = req.file.filename;
-      
+
       const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
         new : true,
         runValidators : true,
