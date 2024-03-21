@@ -66,7 +66,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
       if(req.file){
 
         const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
-        c      
+             
         const result = await put(filename, req.file, { access: 'public', token : process.env.BLOB_READ_WRITE_TOKEN },); 
         
         filteredBody.photo = result.url;
