@@ -81,7 +81,7 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 export const updateUser = catchAsync(async (req, res, next) => {
     try{
       const filteredBody = filterObj(req.body, 'name' , 'surname');
-      if(req.file) filteredBody.photo = req.file.url;
+      //if(req.file) filteredBody.photo = req.file.url;
 
       if(req.file){
         const form = await req.formData();
