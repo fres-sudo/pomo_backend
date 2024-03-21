@@ -84,7 +84,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
       //if(req.file) filteredBody.photo = req.file.url;
 
       
-        const form = await req.formData();
+        const form = await req.file;
         const photo = form.get('photo');
         const blob = await put(photo.name, photo, { access : 'public' });
 
