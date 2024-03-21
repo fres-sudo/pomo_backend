@@ -4,6 +4,9 @@ import catchAsync from './../utils/catchAsync.js';
 import multer from 'multer'
 import sharp from "sharp"
 
+import { put } from '@vercel/blob';
+
+
 
 
 const multerStorage = multer.memoryStorage();
@@ -21,7 +24,28 @@ const upload = multer({
   fileFilter : multerFilter,
   });
 
-export const updateUserPhoto = upload.single('photo');
+//export const updateUserPhoto = upload.single('photo');
+
+export const updateUserPhoto = async (req, res, next) => {
+  try {
+    await put({
+      file: req.file.buffer,
+      name: `user-${req.user.id}-${Date.now()}.jpeg`, // Use same filename convention
+      access: 'public', // Make photo publicly accessible
+    });
+
+    req.file = {
+      filename: `user-${req.user.id}-${Date.now()}.jpeg`,
+      url: `https://pomo.fres.space/public/images/users/${req.file.filename}`, // Construct URL
+    };
+
+    next();
+  } catch (error) {
+    console.log(error); // Log any errors during upload
+    res.status(500).json({ status: 'error', message: 'Failed to upload photo' });
+  }
+};
+
 
 export const resizeUserPhoto = catchAsync (async (req, res, next) => {
   if(!req.file) return next();
@@ -57,7 +81,13 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 export const updateUser = catchAsync(async (req, res, next) => {
     try{
       const filteredBody = filterObj(req.body, 'name' , 'surname');
-      if(req.file) filteredBody.photo = req.file.filename;
+      if(req.file) filteredBody.photo = req.file.url;
+
+      if(req.file){
+        const form = await req.formData();
+        const photo = form.get('photo');
+        const blob = await put(photo.name, photo, { access : 'public' });
+      }
 
       const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
         new : true,
