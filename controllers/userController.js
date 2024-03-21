@@ -62,13 +62,14 @@ export const updateUser = catchAsync(async (req, res, next) => {
       const filteredBody = filterObj(req.body, 'name' , 'surname');
       //if(req.file) filteredBody.photo = req.file.filename;
 
-   
+      console.log(req.file);
       if(req.file){
 
         const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
-        const result = await put(filename, req.file, { access: 'public', token : process.env.BLOB_READ_WRITE_TOKEN },); // Upload to Vercel Blob
-
-        //filteredBody.photo = `https://pomo.fres.space/public/images/users/${filename}`; // Construct URL
+        c      
+        const result = await put(filename, req.file, { access: 'public', token : process.env.BLOB_READ_WRITE_TOKEN },); 
+        
+        filteredBody.photo = result.url;
       }
 
       

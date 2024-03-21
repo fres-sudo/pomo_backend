@@ -24,7 +24,7 @@ router.delete('/deleteMe', authController.protect, userController.deleteMe);
 router.get('/', userController.getAllUsers);
 //.post(userController.createUser);
 
-router.route('/:id').put(authController.protect, /* userController.updateUserPhoto, userController.resizeUserPhoto, */ userController.updateUser)
+router.route('/:id').put(authController.protect,  userController.updateUserPhoto, userController.resizeUserPhoto, userController.updateUser)
 //  .route('/:id')
 //  .get(userController.getUser)
 //  .delete(userController.deleteUser);
