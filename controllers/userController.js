@@ -83,13 +83,12 @@ export const updateUser = catchAsync(async (req, res, next) => {
       const filteredBody = filterObj(req.body, 'name' , 'surname');
       //if(req.file) filteredBody.photo = req.file.url;
 
-      
-        const file = req.file;
-        req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`
+      const file = req.file;
+      req.file.url = `user-${req.user.id}-${Date.now()}.jpeg`
 
-        const blob = await put(req.file.filename, file, { access : 'public' });
+      const blob = await put(req.file.filename, file, { access : 'public' });
 
-        res.status(200).json(blob);
+      res.status(200).json(blob);
       
       const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
         new : true,
