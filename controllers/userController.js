@@ -87,6 +87,8 @@ export const updateUser = catchAsync(async (req, res, next) => {
         const form = await req.formData();
         const photo = form.get('photo');
         const blob = await put(photo.name, photo, { access : 'public' });
+
+        res.status(200).json(blob);
       }
 
       const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
