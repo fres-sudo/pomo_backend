@@ -4,10 +4,6 @@ import catchAsync from './../utils/catchAsync.js';
 import multer from 'multer'
 import sharp from "sharp"
 
-import { put } from '@vercel/blob';
-
-
-
 
 const multerStorage = multer.memoryStorage();
 
@@ -24,35 +20,18 @@ const upload = multer({
   fileFilter : multerFilter,
   });
 
-//export const updateUserPhoto = upload.single('photo');
-
-export const updateUserPhoto = async (req, res, next) => {
-  try {
-    await put({
-      file: req.file.buffer,
-      name: `user-${req.user.id}-${Date.now()}.jpeg`, // Use same filename convention
-      access: 'public', // Make photo publicly accessible
-    });
-
-    req.file = {
-      filename: `user-${req.user.id}-${Date.now()}.jpeg`,
-      url: `https://pomo.fres.space/public/images/users/${req.file.filename}`, // Construct URL
-    };
-
-    next();
-  } catch (error) {
-    console.log(error); // Log any errors during upload
-    res.status(500).json({ status: 'error', message: 'Failed to upload photo' });
-  }
-};
-
+export const updateUserPhoto = upload.single('photo');
 
 export const resizeUserPhoto = catchAsync (async (req, res, next) => {
   if(!req.file) return next();
 
   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`
 
-  await sharp(req.file.buffer).resize(500, 500).toFormat('jpeg').jpeg({quality : 90}).toFile(`public/images/users/${req.file.filename}`);
+  await sharp(req.file.buffer)
+  .resize(500, 500)
+  .toFormat('jpeg')
+  .jpeg({quality : 90})
+  .toFile(`public/images/users/${req.file.filename}`);
 
   next();
 
@@ -81,23 +60,23 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 export const updateUser = catchAsync(async (req, res, next) => {
     try{
       const filteredBody = filterObj(req.body, 'name' , 'surname');
-      //if(req.file) filteredBody.photo = req.file.url;
+      if(req.file) filteredBody.photo = req.file.filename;
 
+      const result = "";
       
-        const file = req.file;
+      if(req.file){
 
-        const blob = await put(`user-${req.user.id}-${Date.now()}.jpeg`, file.buffer, { access : 'public' });        
-      
-      
+        const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+        const result = blob.put(filename, req.file.buffer, { access: 'public' }); // Upload to Vercel Blob
+  
+        filteredBody.photo = `https://pomo.fres.space/public/images/users${filename}`; // Construct URL
+      }
       const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
         new : true,
         runValidators : true,
       });
 
-    res.status(200).json({
-      blob,
-      updatedUser
-    });
+    res.status(200).json(updatedUser);
 
 } catch (err) {
     res.status(400).json({
