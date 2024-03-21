@@ -3,7 +3,7 @@ import AppError from '../utils/appError.js';
 import catchAsync from './../utils/catchAsync.js';
 import multer from 'multer'
 import sharp from "sharp"
-
+import { put } from "@vercel/blob"
 
 const multerStorage = multer.memoryStorage();
 
@@ -67,9 +67,9 @@ export const updateUser = catchAsync(async (req, res, next) => {
       if(req.file){
 
         const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
-        const result = blob.put(filename, req.file.buffer, { access: 'public' }); // Upload to Vercel Blob
+        const result = await put(filename, req.file.buffer, { access: 'public', token : process.env.BLOB_READ_WRITE_TOKEN },); // Upload to Vercel Blob
   
-        filteredBody.photo = `https://pomo.fres.space/public/images/users${filename}`; // Construct URL
+        filteredBody.photo = `https://pomo.fres.space/public/images/users/${filename}`; // Construct URL
       }
       const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
         new : true,
