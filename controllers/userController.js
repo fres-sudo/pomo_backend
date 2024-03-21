@@ -67,7 +67,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
       if(req.file){
 
         const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
-        const result = await put(filename, req.file.buffer, { access: 'public', token : process.env.BLOB_READ_WRITE_TOKEN },); // Upload to Vercel Blob
+        await put(filename, req.file, { access: 'public', token : process.env.BLOB_READ_WRITE_TOKEN },); // Upload to Vercel Blob
   
         filteredBody.photo = `https://jjsfgfmzoftauon7.public.blob.vercel-storage.com/public/images/users/${filename}`; // Construct URL
       }
