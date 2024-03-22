@@ -41,7 +41,7 @@ export const resizeUserPhoto = catchAsync (async (req, res, next) => {
   try {
     const file = req.file;
     console.log({file});
-    const blob = await put(file.originalname, file, { access: 'public' , token : process.env.BLOB_READ_WRITE_TOKEN,  });
+    const blob = await put(file.originalname, file.buffer, { access: 'public' , token : process.env.BLOB_READ_WRITE_TOKEN,  });
     console.log({blob});
     res.json({blob});
   } catch (err) {
@@ -61,7 +61,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
 
       console.log(req.file);
 
-      const result = await put(filename, req.file, 
+      const result = await put(filename, req.file.buffer, 
         { access: 'public', 
         token : process.env.BLOB_READ_WRITE_TOKEN,
         addRandomSuffix: false,
