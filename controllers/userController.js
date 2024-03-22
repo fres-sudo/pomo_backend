@@ -37,6 +37,57 @@ export const resizeUserPhoto = catchAsync (async (req, res, next) => {
 
 });
 
+ export const uploadFile = async (req, res) => {
+  try {
+    const file = req.file;
+    console.log({file});
+    const blob = await put(file.originalname, file, { access: 'public' , token : process.env.BLOB_READ_WRITE_TOKEN,  });
+    console.log({blob});
+    res.json({blob});
+  } catch (err) {
+    res.status(500).json({ error: 'An error occurred while uploading the file.' });
+  }
+}
+
+
+export const updateUser = catchAsync(async (req, res, next) => {
+  try{
+    const filteredBody = filterObj(req.body, 'name' , 'surname');
+  
+    if(req.file){
+
+      const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+           
+
+      console.log(req.file);
+
+      const result = await put(filename, req.file, 
+        { access: 'public', 
+        token : process.env.BLOB_READ_WRITE_TOKEN,
+        addRandomSuffix: false,
+      },); 
+      
+      console.log({result});
+
+      filteredBody.photo = result.url;
+    }
+
+    
+    const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+      new : true,
+      runValidators : true,
+    });
+
+  res.status(200).json(updatedUser);
+
+} catch (err) {
+  res.status(400).json({
+    status: 'error',
+    message: err.message,
+  });
+}
+});
+
 const filterObj = (obj, ...allowFields) => {
   const newObj = {};
   Object.keys(obj).forEach((el) => {
@@ -57,36 +108,6 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-export const updateUser = catchAsync(async (req, res, next) => {
-    try{
-      const filteredBody = filterObj(req.body, 'name' , 'surname');
-      //if(req.file) filteredBody.photo = req.file.filename;
-
-      console.log(req.file);
-      if(req.file){
-
-        const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
-             
-        const result = await put(filename, req.file, { access: 'public', token : process.env.BLOB_READ_WRITE_TOKEN },); 
-        
-        filteredBody.photo = result.url;
-      }
-
-      
-      const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
-        new : true,
-        runValidators : true,
-      });
-
-    res.status(200).json(updatedUser);
-
-} catch (err) {
-    res.status(400).json({
-      status: 'error',
-      message: err.message,
-    });
-  }
-});
 
 export const deleteMe = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
