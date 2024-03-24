@@ -61,11 +61,11 @@ export const updateUser = catchAsync(async (req, res, next) => {
 
       console.log(req.file);
 
-      const result = await put(filename, req.file.buffer, 
-        { access: 'public', 
+      const result = await put(filename, req.file.buffer, {
+         access: 'public', 
         token : process.env.BLOB_READ_WRITE_TOKEN,
         addRandomSuffix: false,
-      },); 
+      }); 
       
       console.log({result});
 

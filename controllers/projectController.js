@@ -79,10 +79,7 @@ export const deleteProject = catchAsync(async (req, res, next) => {
   if (!project) {
     return next(new AppError('Project not found', 404));
   }
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
+  res.status(200).json(project);
 });
 
 
