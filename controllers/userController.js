@@ -53,7 +53,7 @@ export const resizeUserPhoto = catchAsync (async (req, res, next) => {
 export const updateUser = catchAsync(async (req, res, next) => {
   try{
     const filteredBody = filterObj(req.body, 'name' , 'surname');
-  
+
     if(req.file){
 
       const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
