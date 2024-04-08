@@ -82,7 +82,7 @@ export const updateUserPhoto = async (req, res) => {
 export const updateUser = catchAsync(async (req, res, next) => {
   try {
 
-    const filteredBody = filterObj(req.body, 'name', 'surname');
+    const filteredBody = filterObj(req.body, 'name', 'surname', 'photo');
 
     const updatedUser = await User.findByIdAndUpdate(req.params.id, filteredBody, {
       new: true,
