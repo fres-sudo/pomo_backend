@@ -3,9 +3,11 @@ import AppError from '../utils/appError.js';
 import catchAsync from './../utils/catchAsync.js';
 import multer from 'multer'
 import sharp from "sharp"
-import { put } from "@vercel/blob"
+import { put, del } from "@vercel/blob"
 
 const multerStorage = multer.memoryStorage();
+
+const kProPicPlaceholderURL = "https://vercel.com/fres-sudos-projects/pomo/stores/blob/store_JJsFgFmzofTAUoN7/browser?file_url=https%253A%252F%252Fjjsfgfmzoftauon7.public.blob.vercel-storage.com%252Fpropic-placeholder-2icvPYX8oI6Q0VbnhmoiSBovWFWzRp.jpg";
 
 const multerFilter = (req, file, cb) => {
   if(file.mimetype.startsWith('image')){
@@ -20,7 +22,7 @@ const upload = multer({
   fileFilter : multerFilter,
   });
 
-export const updateUserPhoto = upload.single('photo');
+//export const updateUserPhoto = upload.single('photo');
 
 export const resizeUserPhoto = catchAsync (async (req, res, next) => {
   if(!req.file) return next();
@@ -37,55 +39,63 @@ export const resizeUserPhoto = catchAsync (async (req, res, next) => {
 
 });
 
- export const uploadFile = async (req, res) => {
+export const updateUserPhoto = async (req, res) => {
   try {
     const file = req.file;
-    console.log({file});
-    const blob = await put(file.originalname, file.buffer, { access: 'public' , token : process.env.BLOB_READ_WRITE_TOKEN,  });
-    console.log({blob});
-    res.json({blob});
+    console.log({ file });
+
+    // Fetch user data from the database
+    const user = await User.findById(req.params.id);
+
+    // Check if the user already has a photo
+    if (user.photo) {
+      console.log("existing file name", user.photo);
+
+      // Remove the existing photo from storage
+      await del(user.photo, {
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+      });
+    }
+
+    const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+    const blob = await put(filename, file.buffer, { 
+      access: 'public', 
+      token: process.env.BLOB_READ_WRITE_TOKEN,  
+    });
+    
+    console.log({ blob });
+
+    // Update the user's photo field in MongoDB
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, { photo: blob.url }, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json(updatedUser);
   } catch (err) {
     res.status(500).json({ error: 'An error occurred while uploading the file.' });
   }
-}
+};
 
 
 export const updateUser = catchAsync(async (req, res, next) => {
-  try{
-    const filteredBody = filterObj(req.body, 'name' , 'surname');
+  try {
 
-    if(req.file){
+    const filteredBody = filterObj(req.body, 'name', 'surname');
 
-      const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
-           
-
-      console.log(req.file);
-
-      const result = await put(filename, req.file.buffer, {
-         access: 'public', 
-        token : process.env.BLOB_READ_WRITE_TOKEN,
-        addRandomSuffix: false,
-      }); 
-      
-      console.log({result});
-
-      filteredBody.photo = result.url;
-    }
-
-    
-    const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
-      new : true,
-      runValidators : true,
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, filteredBody, {
+      new: true,
+      runValidators: true,
     });
 
-  res.status(200).json(updatedUser);
-
-} catch (err) {
-  res.status(400).json({
-    status: 'error',
-    message: err.message,
-  });
-}
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(400).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
 });
 
 const filterObj = (obj, ...allowFields) => {

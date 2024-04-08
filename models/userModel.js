@@ -2,6 +2,9 @@ import mongoose from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs/dist/bcrypt.js';
 import crypto from 'crypto';
+import otpGenerator from "otp-generator";
+import catchAsync from '../utils/catchAsync.js';
+import AppError from '../utils/appError.js';
 
 const userSchema = mongoose.Schema({
   username: {
@@ -95,8 +98,16 @@ userSchema.methods.changePasswordAfter = function (JWTTimestamp) {
   return JWTTimestamp < changeTimeStamp;
 };
 
+//-------------    GENERATE TOKEN FOR THE USER ------------------
+
 userSchema.methods.createPasswordResetToken = function () {
-  const resetToken = crypto.raandomBytes(32).toString('hex');
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  //const otp = otpGenerator.generate(6, {
+  //  upperCaseAlphabets: false,
+  //  lowerCaseAlphabets: false,
+  //  specialChars: false,
+  //});
 
   //to store the token but crypted
   this.passwordResetToken = crypto
@@ -108,6 +119,9 @@ userSchema.methods.createPasswordResetToken = function () {
   //return the token, that should be send via email
   return resetToken;
 };
+
+
+
 
 const User = mongoose.model('User', userSchema);
 

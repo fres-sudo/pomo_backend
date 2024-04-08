@@ -9,9 +9,13 @@ import {
   addTaskToProject,
   deleteTaskFromProject,
   updateTaskInProject,
-  getProjectsByUser
+  getProjectsByUser,
+  uploadImageCover,
 } from '../controllers/projectController.js';
 import * as authController from './../controllers/authController.js';
+import multer from "multer";
+
+const upload = multer();
 
 const router = express.Router();
 
@@ -19,6 +23,8 @@ const router = express.Router();
 router.post('/:projectId/tasks', authController.protect, addTaskToProject);
 router.delete('/:projectId/tasks/:taskId',authController.protect, deleteTaskFromProject);
 router.patch('/:projectId/tasks/:taskId', authController.protect, updateTaskInProject);
+
+router.route('/uploadImageCover/:id').put(authController.protect,  upload.single('photo'), uploadImageCover);
 
 
 // Define existing routes

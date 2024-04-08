@@ -2,6 +2,8 @@ import Project from '../models/projectModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 
+import {put} from '@vercel/blob'
+
 // Create a new project
 export const createProject = catchAsync(async (req, res, next) => {
   const { name, description, dueDate, owner, imageCover, tasks, contributors } = req.body;
@@ -19,6 +21,49 @@ export const createProject = catchAsync(async (req, res, next) => {
   const project = await Project.create(projectData);
   res.status(201).json(project);
 });
+
+export const uploadImageCover = async (req, res) => {
+  try {
+    const file = req.file;
+    console.log({ file });
+
+    // Fetch project data from the database
+    const project = await Project.findById(req.params.id);
+
+    console.log({ project });
+
+    // Check if the project already has a photo
+    //if (project.imageCover) {
+    //  console.log("existing file name", project.imageCover);
+
+      // Remove the existing photo from storage
+    //  await del(project.photo, {
+    //    token: process.env.BLOB_READ_WRITE_TOKEN,
+    //  });
+    //}
+
+ 
+    const filename = `project-${req.user.id}-${Date.now()}.jpeg`;
+
+    const blob = await put(filename, file.buffer, { 
+      access: 'public', 
+      token: process.env.BLOB_READ_WRITE_TOKEN,  
+    });
+    
+    console.log({ blob });
+
+    // Update the project's photo field in MongoDB
+    const updateProject = await Project.findByIdAndUpdate(req.params.id, { imageCover: blob.url }, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json(updateProject);
+  } catch (err) {
+    res.status(500).json({ error: 'An error occurred while uploading the file.', message : err });
+  }
+};
+
 
 // Get all projects
 export const getAllProjects = catchAsync(async (req, res, next) => {

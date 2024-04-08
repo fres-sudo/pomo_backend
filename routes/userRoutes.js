@@ -12,7 +12,7 @@ router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 
 router.post('/forgotPassword', authController.forgotPassword);
-router.patch('/resetPassword/:token', authController.resetPassword);
+router.patch('/recoverPassword/:token', authController.resetPassword);
 
 router.patch(
   '/updateMyPassword',
@@ -26,11 +26,10 @@ router.delete('/deleteMe', authController.protect, userController.deleteMe);
 router.get('/', userController.getAllUsers);
 //.post(userController.createUser);
 
-router.route('/:id').put(authController.protect,  upload.single('photo'), userController.updateUser)
+router.route('/:id').put(authController.protect, userController.updateUser)
+router.route('/uploadPhoto/:id').put(authController.protect,  upload.single('photo'), userController.updateUserPhoto)
 //  .route('/:id')
 //  .get(userController.getUser)
 //  .delete(userController.deleteUser);
-
-router.post('/uploadPhoto', upload.single('photo'), userController.uploadFile);
 
 export default router;

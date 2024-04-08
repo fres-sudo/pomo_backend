@@ -18,9 +18,7 @@ const projectSchema = new Schema({
     }],
     default: [],
   },
-  imageCover: {
-    type: String,
-  },
+  imageCover: String,
   dueDate: {
     type: Date,
     default: Date.now(),

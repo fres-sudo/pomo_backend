@@ -4,6 +4,8 @@ import catchAsync from './../utils/catchAsync.js';
 import jwt from 'jsonwebtoken';
 import AppError from './../utils/appError.js';
 import crypto from 'crypto';
+import { Email } from '../utils/email.js';
+import otpGenerator from 'otp-generator';
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -11,7 +13,23 @@ const signToken = (id) => {
   });
 };
 
-// --- SIGNUP ---
+// ------------------------------ CREATE SEND TOKEN ------------------------------
+
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+ 
+  // Remove password from output
+  user.password = undefined;
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    user
+  });
+};
+
+
+// ------------------------------ SIGNUP ---------------------------------
 
 export const signup = catchAsync(async (req, res, next) => {
   const user = await User.create({
@@ -23,14 +41,10 @@ export const signup = catchAsync(async (req, res, next) => {
 
   const token = signToken(user._id);
 
-  res.status(201).json({
-    status: 'success',
-    token,
-    user,
-  });
+  createSendToken(newUser, 201, res);
 });
 
-// --- LOGIN ---
+// ------------------------------ LOGIN ------------------------------
 
 export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
@@ -61,7 +75,7 @@ export const login = catchAsync(async (req, res, next) => {
   });
 });
 
-// --- PROTECT THE ROUTES ---
+// ------------------------------ PROTECT THE ROUTES ------------------------------
 
 // Middleware function to protect routes
 export const protect = async (req, res, next) => {
@@ -119,7 +133,7 @@ export const protect = async (req, res, next) => {
 };
 
 
-// --- RESTRICT FUNCTION TO CERTAIN USERS ---
+// ------------------------------ RESTRICT FUNCTION TO CERTAIN USERS ------------------------------
 
 export const restrictTo = (...roles) => {
   return (req, res, next) => {
@@ -135,50 +149,55 @@ export const restrictTo = (...roles) => {
   };
 };
 
-// --- FORGOT PASSWORD ---
+// ------------------------------ FORGOT PASSWORD ------------------------------
 
 export const forgotPassword = catchAsync(async (req, res, next) => {
-  // Get user based on POSted email
-  const user = await User.findOne({ email: req.body.email });
-  if (!user) {
-    return next(new AppError('There is no user with this email address', 404));
-  }
-
-  // Generate random reset token
-
-  const resetToken = User.createPasswordResetToken();
-
-  await user.save({ validateBeforeSave: false });
-
-  // Send it to user's email
-
-  const resetURL = `${req.protocol}://${req.get(
-    'host'
-  )}/api/v1/users/resetPassword/${resetToken}`;
-
-  const message = `Forgot your password? Submit a request with your new password and confirm password to: ${resetURL}. \nIf you didn't forgot your password please ignore this email.`;
+  
+  const body = req.body;
+  console.log({body});
 
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Your password reset token (valid for 10 minutes)',
-      message,
-    });
+    // Get user based on POSted email
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return next(new AppError('There is no user with this email address', 404));
+    }
 
-    res.status(200).json({
-      status: 'success',
-      message: 'Token sent to email!',
-    });
-  } catch (error) {
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
+    // Generate random reset token
+    const resetToken = user.createPasswordResetToken();
+
     await user.save({ validateBeforeSave: false });
+    
+    // Send it to user's email
+    const resetOTP = otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      lowerCaseAlphabets: false,
+      specialChars: false,
+    });
 
+    console.log({resetOTP});
+
+    // Check if user's email is valid
+    if (!user.email) {
+      return next(new AppError('User email is not provided.', 400));
+    }
+    // Create new Email instance
+    const emailSender = new Email(user, resetOTP);
+
+    // Send password reset email
+    await emailSender.sendPasswordReset();
+
+    console.log(resetOTP,resetToken);
+
+    res.status(200).json({resetOTP, resetToken});
+  } catch (error) {
+    console.error("Error in forgotPassword:", error);
     return next(new AppError('There was an error while sending your email'));
   }
 });
 
-// --- RESET PASSWORD ---
+
+// ------------------------------ RESET PASSWORD ------------------------------
 
 export const resetPassword = catchAsync(async (req, res, next) => {
   // Get user based on the token
@@ -203,7 +222,7 @@ export const resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetExpires = undefined;
   await user.save();
 
-  //Update changeéassword at property for the user
+  //Update change password at property for the user
 
   // Log the user in
 
@@ -215,7 +234,7 @@ export const resetPassword = catchAsync(async (req, res, next) => {
   });
 });
 
-// --- UPDATE PASSWORD ---
+// ------------------------------ UPDATE PASSWORD ------------------------------
 
 export const updatePassword = catchAsync(async (req, res, next) => {
   //Get the user from collection
@@ -243,3 +262,4 @@ export const updatePassword = catchAsync(async (req, res, next) => {
     token,
   });
 });
+
