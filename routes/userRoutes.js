@@ -27,7 +27,7 @@ router.get('/', userController.getAllUsers);
 //.post(userController.createUser);
 
 router.route('/:id').put(authController.protect, userController.updateUser)
-router.route('/uploadPhoto/:id').put(authController.protect,  upload.single('photo'), userController.updateUserPhoto)
+router.route('/uploadPhoto/:id').put(authController.protect, upload.single('photo'), userController.updateUserPhoto)
 //  .route('/:id')
 //  .get(userController.getUser)
 //  .delete(userController.deleteUser);

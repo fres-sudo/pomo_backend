@@ -40,7 +40,7 @@ export class Email {
       to: this.to,
       subject,
       html,
-      text: "CIAOO"
+      //text: "CIAOO"
     };
 
     //Create transport and send email

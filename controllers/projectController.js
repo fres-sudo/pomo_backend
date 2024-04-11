@@ -1,8 +1,17 @@
 import Project from '../models/projectModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
+import {put} from '@vercel/blob';
+import aws from "aws-sdk";
 
-import {put} from '@vercel/blob'
+// Configure AWS S3
+aws.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_BUCKET_REGION,
+});
+
+const s3 = new aws.S3();
 
 // Create a new project
 export const createProject = catchAsync(async (req, res, next) => {
@@ -25,35 +34,24 @@ export const createProject = catchAsync(async (req, res, next) => {
 export const uploadImageCover = async (req, res) => {
   try {
     const file = req.file;
-    console.log({ file });
 
     // Fetch project data from the database
-    const project = await Project.findById(req.params.id);
+    //const project = await Project.findById(req.params.id);
 
-    console.log({ project });
+    // Upload the file to S3
+    const result = await s3.upload({
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: `project-${req.user.id}-${Date.now()}.jpeg`,
+      Body: file.buffer,
+      ACL:'public-read'
+    }).promise();
 
-    // Check if the project already has a photo
-    //if (project.imageCover) {
-    //  console.log("existing file name", project.imageCover);
+    console.log({result});
 
-      // Remove the existing photo from storage
-    //  await del(project.photo, {
-    //    token: process.env.BLOB_READ_WRITE_TOKEN,
-    //  });
-    //}
-
- 
-    const filename = `project-${req.user.id}-${Date.now()}.jpeg`;
-
-    const blob = await put(filename, file.buffer, { 
-      access: 'public', 
-      token: process.env.BLOB_READ_WRITE_TOKEN,  
-    });
-    
-    console.log({ blob });
+    const uploadedImageUrl = result.Location;
 
     // Update the project's photo field in MongoDB
-    const updateProject = await Project.findByIdAndUpdate(req.params.id, { imageCover: blob.url }, {
+    const updateProject = await Project.findByIdAndUpdate(req.params.id, { imageCover: uploadedImageUrl }, {
       new: true,
       runValidators: true,
     });
