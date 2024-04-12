@@ -41,14 +41,14 @@ export const updateUserPhoto = async (req, res) => {
 
       // Delete the existing photo from S3
       await s3.deleteObject({
-        Bucket: process.env.AWS_BUCKET_NAME, // Replace with your bucket name
+        Bucket: process.env.AWS_BUCKET_NAME, 
         Key: user.photo,
       }).promise();
     }
     
     // Upload the file to S3
     const result = await s3.upload({
-      Bucket: process.env.AWS_BUCKET_NAME, // Replace with your bucket name
+      Bucket: process.env.AWS_BUCKET_NAME,
       Key: `user-${req.user.id}-${Date.now()}.jpeg`,
       Body: file.buffer,
       ACL:'public-read'
