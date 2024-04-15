@@ -36,7 +36,7 @@ export const updateUserPhoto = async (req, res) => {
 
     // Check if the user already has a photo
     
-    if (user.photo) {
+    if (false) {
       console.log("existing file name", user.photo);
 
       // Delete the existing photo from S3
