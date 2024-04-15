@@ -111,10 +111,7 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 
 
 export const deleteMe = catchAsync(async (req, res, next) => {
-  await User.findByIdAndUpdate(req.user.id, { active: false });
+  await User.findByIdAndDelete(req.params.id);
 
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
+  res.status(204).json("success");
 });

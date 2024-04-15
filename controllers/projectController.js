@@ -34,10 +34,11 @@ export const createProject = catchAsync(async (req, res, next) => {
 export const uploadImageCover = async (req, res) => {
   try {
     const file = req.file;
+
     // Upload the file to S3
     const result = await s3.upload({
-      Bucket: "pomo-images",
-      Key: `project-${req.user.id}-${Date.now()}.jpeg`,
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: `user-${req.user.id}-${Date.now()}.jpeg`,
       Body: file.buffer,
       ACL:'public-read'
     }).promise();
