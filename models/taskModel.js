@@ -4,7 +4,7 @@ const taskSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Please provide a name for the task'],
-    unique: false,
+    index: true,
   },
   description: {
     type: String,
